@@ -10,8 +10,6 @@ const app = express();
 
 app.use(morgan('combined'));
 
-console.log(process.env);
-
 app.post('/api/v1/signup', (req, res, next) => {
   res.json({
     status: 'success'
