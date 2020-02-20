@@ -3,6 +3,8 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
+const userRouter = require('./routes/userRoutes');
+
 /** ENVIRONMENT VARIABLE */
 dotenv.config({
   path: './config.env'
@@ -36,11 +38,7 @@ try {
 /** END: DATABASE */
 
 /** API */
-app.post('/api/v1/signup', (req, res, next) => {
-  res.json({
-    status: 'success'
-  });
-});
+app.use('/api/v1/users', userRouter);
 /** END: API */
 
 module.exports = app;
