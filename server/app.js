@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 
 const userRouter = require('./routes/userRoutes');
 
+const errorController = require('./controllers/errorController');
+
 dotenv.config({
   path: './config.env'
 });
@@ -32,5 +34,8 @@ try {
 }
 
 app.use('/api/v1/users', userRouter);
+
+// global error controller
+app.use(errorController);
 
 module.exports = app;
