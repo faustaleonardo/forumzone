@@ -3,9 +3,11 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
+/** ENVIRONMENT VARIABLE */
 dotenv.config({
   path: './config.env'
 });
+/** END: ENVIRONMENT VARIABLE */
 
 const app = express();
 
