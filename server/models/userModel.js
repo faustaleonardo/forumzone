@@ -1,5 +1,7 @@
+const { promisify } = require('util');
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -10,8 +12,9 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    lowercase: true,
     required: [true, 'Please provide your email!'],
-    unique: [true, 'This email has been taken. Please use another one!'],
+    unique: true,
     validate: [validator.isEmail, 'Please provide a valid email!']
   },
   password: {
@@ -31,8 +34,7 @@ const userSchema = new mongoose.Schema({
     }
   },
   photo: {
-    type: String,
-    required: [true, 'Please provide your photo!']
+    type: String
   },
   job: [Array],
   accessibility: {
@@ -40,6 +42,7 @@ const userSchema = new mongoose.Schema({
     default: true
   },
   role: {
+    type: String,
     default: 'user',
     enum: ['user', 'admin']
   },
@@ -47,6 +50,20 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   }
+});
+
+userSchema.methods.hashPassword = async function() {
+  return await promisify(bcrypt.hash)(this.password, 12);
+};
+
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) next();
+  this.password = await this.hashPassword();
+
+  // exclude passwordConfirmation field to persist in DB
+  this.passwordConfirmation = undefined;
+
+  next();
 });
 
 const userModel = mongoose.model('User', userSchema);

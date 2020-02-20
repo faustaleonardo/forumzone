@@ -5,20 +5,15 @@ const mongoose = require('mongoose');
 
 const userRouter = require('./routes/userRoutes');
 
-/** ENVIRONMENT VARIABLE */
 dotenv.config({
   path: './config.env'
 });
-/** END: ENVIRONMENT VARIABLE */
 
 const app = express();
 
-/** MIDDLEWARE */
 app.use(morgan('combined'));
 app.use(express.json());
-/** END: MIDDLEWARE */
 
-/** DATABASE */
 const options = {
   useNewUrlParser: true,
   useCreateIndex: true
@@ -35,10 +30,7 @@ try {
 } catch (err) {
   console.log('Failed connecting to Database');
 }
-/** END: DATABASE */
 
-/** API */
 app.use('/api/v1/users', userRouter);
-/** END: API */
 
 module.exports = app;
