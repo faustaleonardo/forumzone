@@ -7,7 +7,8 @@ const {
   createForum,
   getForum,
   updateForum,
-  deleteForum
+  deleteForum,
+  setUserId
 } = require('./../controllers/forumController');
 
 const { protect } = require('./../controllers/authController');
@@ -15,11 +16,11 @@ const { protect } = require('./../controllers/authController');
 router
   .route('/')
   .get(getAllForums)
-  .post(protect, createForum);
+  .post(protect, setUserId, createForum);
 
 router
   .route('/:id')
-  .get(protect, getForum)
+  .get(getForum)
   .patch(protect, updateForum)
   .delete(protect, deleteForum);
 

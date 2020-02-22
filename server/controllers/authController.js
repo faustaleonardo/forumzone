@@ -168,10 +168,3 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   next();
 });
-
-exports.restrictToAdminOnly = (req, res, next) => {
-  if (req.user.role !== 'admin')
-    return next(new AppError('You do not have permission to do this.', 401));
-
-  next();
-};

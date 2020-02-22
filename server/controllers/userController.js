@@ -1,6 +1,6 @@
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+const { getOne, getAll } = require('./handleFactory');
 
 const filter = (obj, ...fields) => {
   const newObj = {};
@@ -12,31 +12,8 @@ const filter = (obj, ...fields) => {
   return newObj;
 };
 
-exports.getUser = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-
-  const user = await User.findById(id);
-  if (!user) next(new AppError(`Can't find user with that id`, 404));
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user
-    }
-  });
-});
-
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).send({
-    status: 'success',
-    results: users.length,
-    data: {
-      users
-    }
-  });
-});
+exports.getUser = getOne(User);
+exports.getAllUsers = getAll(User);
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   const filterObj = filter(
