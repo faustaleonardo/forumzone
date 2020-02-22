@@ -12,9 +12,13 @@ const createToken = id => {
   });
 };
 
-const sendToken = (token, res, statusCode) => {
+const sendToken = (user, res, statusCode) => {
+  const token = createToken(user._id);
   res.status(statusCode).json({
     status: 'success',
+    data: {
+      user
+    },
     token
   });
 };
@@ -35,16 +39,14 @@ const getMessageOptions = (email, url) => {
 exports.signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirmation } = req.body;
 
-  const newUser = await User.create({
+  const user = await User.create({
     name,
     email,
     password,
     passwordConfirmation
   });
 
-  const token = createToken(newUser._id);
-
-  sendToken(token, res, 204);
+  sendToken(user, res, 204);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -52,12 +54,12 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!email || !password)
     next(new AppError('Please provide both email and password', 400));
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select('+password');
+
   if (!user || !(await user.verifyPassword(password, user.password)))
     next(new AppError('Your email or password is incorrect', 401));
 
-  const token = createToken(user.id);
-  sendToken(token, res, 200);
+  sendToken(user, res, 200);
 });
 
 exports.forgetPassword = catchAsync(async (req, res, next) => {
@@ -118,8 +120,30 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   await user.save();
 
-  const token = createToken(user._id);
-  sendToken(token, res, 200);
+  sendToken(user, res, 200);
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const { passwordCurrent, password, passwordConfirmation } = req.body;
+  if (!passwordCurrent || !password || !passwordConfirmation)
+    next(
+      new AppError(
+        'Please provide your passwordCurrent, password and passwordConfirmation'
+      )
+    );
+
+  const { _id } = req.user;
+  const user = await User.findById(_id).select('+password');
+
+  if (!(await user.verifyPassword(passwordCurrent, user.password))) {
+    next(new AppError('Your password is incorrect', 401));
+  }
+
+  user.password = password;
+  user.passwordConfirmation = passwordConfirmation;
+
+  await user.save();
+  sendToken(user, res, 200);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -129,8 +153,17 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
 
+  if (!token)
+    return next(new AppError('You are not logged in. Please log in', 401));
+
   const { id } = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
   const user = await User.findById(id);
+
+  if (!user)
+    return next(
+      new AppError('The user belonging to this token no longer exists', 401)
+    );
+
   req.user = user;
 
   next();
