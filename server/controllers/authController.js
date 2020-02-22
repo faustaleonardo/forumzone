@@ -1,4 +1,5 @@
 const { promisify } = require('util');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -55,16 +56,13 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('User with that email is not found', 404));
 
   const token = user.createResetToken();
-
   await user.save({ validateBeforeSave: false });
-
   const url = `${req.protocol}://${req.get(
     'host'
   )}/api/v1/users/resetPassword/${token}`;
 
-  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${url}.\nIf you didn't forget your password, please ignore this email!`;
-
   try {
+    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${url}.\nIf you didn't forget your password, please ignore this email!`;
     const options = {
       email: user.email,
       subject: 'Reset Your Password',
@@ -73,12 +71,49 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 
     await sendEmail(options);
     res.status(200).json({
-      status: 'status',
+      status: 'success',
       message: 'A reset password url has been sent to your email.'
     });
   } catch (err) {
-    return next(new AppError('Something went wrong. Try again later.', 500));
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    next(new AppError('Something went wrong. Try again later.', 500));
   }
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  const resetToken = req.params.token;
+  const { password, passwordConfirmation } = req.body;
+
+  if (!resetToken) return next(new AppError('No reset token is provided', 404));
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() }
+  });
+
+  if (!user) return next(new AppError('Token is invalid or expired!', 400));
+
+  user.password = password;
+  user.passwordConfirmation = passwordConfirmation;
+
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+
+  const token = sendToken(user._id);
+
+  res.status(200).json({
+    status: 'success',
+    token
+  });
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
