@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String
   },
-  job: [Array],
+  jobs: Array,
   accessibility: {
     type: Boolean,
     default: true
@@ -50,7 +50,13 @@ const userSchema = new mongoose.Schema({
   },
   active: {
     type: Boolean,
-    default: true
+    default: true,
+    select: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    select: false
   },
   passwordResetToken: String,
   passwordResetExpires: Date
@@ -88,6 +94,11 @@ userSchema.pre('save', async function(next) {
   // exclude passwordConfirmation field to persist in DB
   this.passwordConfirmation = undefined;
 
+  next();
+});
+
+userSchema.pre(/^find/, function(next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 

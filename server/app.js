@@ -38,7 +38,12 @@ mongoose
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/forums', forumRouter);
-
+app.use('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: 'Route does not exist.'
+  });
+});
 // global error controller
 app.use(errorController);
 
