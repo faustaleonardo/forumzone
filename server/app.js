@@ -27,12 +27,14 @@ const uri = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-try {
-  mongoose.connect(uri, options);
-  console.log('Connected to Database');
-} catch (err) {
-  console.log('Failed connecting to Database');
-}
+mongoose
+  .connect(uri, options)
+  .then(() => {
+    console.log('Connected to Database');
+  })
+  .catch(err => {
+    console.log('Failed connecting to Database', err);
+  });
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/forums', forumRouter);

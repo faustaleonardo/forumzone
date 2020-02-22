@@ -25,7 +25,7 @@ const handleTokenExpiredError = () => {
 };
 
 const handleJsonWebTokenError = () => {
-  const message = 'Invalid JWT token.';
+  const message = 'Invalid JWT token!';
   return new AppError(message, '401');
 };
 
