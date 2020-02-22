@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
 const userRouter = require('./routes/userRoutes');
+const forumRouter = require('./routes/forumRoutes');
 
 const errorController = require('./controllers/errorController');
 
@@ -34,6 +35,7 @@ try {
 }
 
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/forums', forumRouter);
 
 // global error controller
 app.use(errorController);

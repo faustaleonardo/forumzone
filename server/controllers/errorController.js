@@ -19,6 +19,16 @@ const handleCastErrorDB = error => {
   return new AppError(message, '400');
 };
 
+const handleTokenExpiredError = () => {
+  const message = 'Your JWT token has expired. Please log in again.';
+  return new AppError(message, '401');
+};
+
+const handleJsonWebTokenError = () => {
+  const message = 'Invalid JWT token.';
+  return new AppError(message, '401');
+};
+
 const sendErrDev = (error, res) => {
   const { status, statusCode, message, stack } = error;
 
@@ -55,6 +65,10 @@ module.exports = (err, req, res, next) => {
       error = handleValidationErrorDB(error);
 
     if (error.code === 11000) error = handleDuplicateKeyErrorDB(error);
+
+    if (error.name === 'TokenExpiredError') error = handleTokenExpiredError();
+
+    if (error.name === 'JsonWebTokenError') error = handleJsonWebTokenError();
 
     sendErrProd(error, res);
   }

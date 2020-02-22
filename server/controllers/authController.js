@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -34,7 +35,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email });
   if (!user || !(await user.verifyPassword(password, user.password)))
-    return next(new AppError('Your email or password is incorrect', 400));
+    return next(new AppError('Your email or password is incorrect', 401));
 
   const token = sendToken(user.id);
 
@@ -42,4 +43,19 @@ exports.login = catchAsync(async (req, res, next) => {
     status: 'success',
     token
   });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  let token;
+
+  if (req.headers && req.headers.authorization) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  const { id } = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
+
+  const user = await User.findById(id);
+  req.user = user;
+
+  next();
 });
