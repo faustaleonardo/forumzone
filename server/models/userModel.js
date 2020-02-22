@@ -56,6 +56,13 @@ userSchema.methods.hashPassword = async function() {
   return await promisify(bcrypt.hash)(this.password, 12);
 };
 
+userSchema.methods.verifyPassword = async function(
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) next();
   this.password = await this.hashPassword();

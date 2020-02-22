@@ -8,6 +8,17 @@ const handleValidationErrorDB = error => {
   return new AppError(message, '400');
 };
 
+const handleDuplicateKeyErrorDB = error => {
+  const duplicateKey = error.message.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0];
+  const message = `Duplicate value: ${duplicateKey}. Please use another!`;
+  return new AppError(message, '400');
+};
+
+const handleCastErrorDB = error => {
+  const message = `Invalid ${error.path}: ${error.value}`;
+  return new AppError(message, '400');
+};
+
 const sendErrDev = (error, res) => {
   const { status, statusCode, message, stack } = error;
 
@@ -38,8 +49,12 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
 
+    if (error.name === 'CastError') error = handleCastErrorDB(error);
+
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
+
+    if (error.code === 11000) error = handleDuplicateKeyErrorDB(error);
 
     sendErrProd(error, res);
   }
