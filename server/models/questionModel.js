@@ -27,7 +27,7 @@ const questionSchema = new mongoose.Schema(
       default: true
     },
     views: {
-      Type: String,
+      Type: Number,
       default: 0
     },
     createdAt: {

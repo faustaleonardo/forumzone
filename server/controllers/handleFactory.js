@@ -1,5 +1,6 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const APIFeatures = require('./../utils/apiFeatures');
 
 exports.checkIfDocExist = Model => {
   return catchAsync(async (req, res, next) => {
@@ -41,7 +42,9 @@ exports.getAll = Model => {
     // for filtering out nested votes on comment
     if (req.params.commentId) filter = { comment: req.params.commentId };
 
-    const docs = await Model.find(filter);
+    const features = new APIFeatures(Model.find(filter), req.query).filter();
+
+    const docs = await features.query;
 
     res.status(200).json({
       status: 'success',
