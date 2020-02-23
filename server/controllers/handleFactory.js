@@ -59,8 +59,9 @@ exports.getOne = Model => {
 exports.updateOne = Model => {
   return catchAsync(async (req, res, next) => {
     const { id } = req.params;
+    const obj = { ...req.body, updatedAt: Date.now() };
 
-    const doc = await Model.findByIdAndUpdate(id, req.body, {
+    const doc = await Model.findByIdAndUpdate(id, obj, {
       new: true,
       runValidators: true
     });
