@@ -16,6 +16,7 @@ const {
 const { protect } = require('./../controllers/authController');
 
 const commentRouter = require('./../routes/commentRoutes');
+const bookmarkRouter = require('./../routes/bookmarkRoutes');
 
 router.patch(
   '/:id/comments/:commentId/solve',
@@ -26,6 +27,7 @@ router.patch(
 );
 
 router.use('/:questionId/comments', protect, commentRouter);
+router.use('/:questionId/bookmarks', protect, bookmarkRouter);
 
 router
   .route('/')

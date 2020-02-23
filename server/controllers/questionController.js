@@ -19,7 +19,6 @@ exports.hasPermission = hasPermission(Question);
 
 exports.selectUser = catchAsync(async (req, res, next) => {
   const comment = await Comment.findById(req.params.commentId);
-
   req.body.solvedBy = comment.user;
 
   next();

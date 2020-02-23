@@ -1,20 +1,6 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
-// exports.checkIfDocExist = Model => {
-//   return catchAsync(async (req, res, next) => {
-//     const { questionId } = req.params;
-
-//     if (!(await Model.findById(questionId))) {
-//       return next(
-//         new AppError(`Can't find ${Model.modelName} with that id`, 400)
-//       );
-//     }
-
-//     next();
-//   });
-// };
-
 exports.createOne = Model => {
   return catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
@@ -30,7 +16,11 @@ exports.createOne = Model => {
 
 exports.getAll = Model => {
   return catchAsync(async (req, res, next) => {
-    const docs = await Model.find();
+    // for filtering out nested comments or bookmarks on question
+    let filter = {};
+    if (req.params.questionId) filter = { question: req.params.questionId };
+
+    const docs = await Model.find(filter);
 
     res.status(200).json({
       status: 'success',

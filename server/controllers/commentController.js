@@ -1,5 +1,4 @@
 const Comment = require('./../models/commentModel');
-const Question = require('./../models/questionModel');
 const catchAsync = require('./../utils/catchAsync');
 
 const {
