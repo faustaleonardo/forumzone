@@ -15,6 +15,8 @@ const voteSchema = new mongoose.Schema({
   }
 });
 
+voteSchema.index({ comment: 1, user: 1 }, { unique: true });
+
 const voteModel = mongoose.model('Vote', voteSchema);
 
 module.exports = voteModel;

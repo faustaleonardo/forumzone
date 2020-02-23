@@ -7,6 +7,7 @@ const userRouter = require('./routes/userRoutes');
 const questionRouter = require('./routes/questionRoutes');
 const commentRouter = require('./routes/commentRoutes');
 const bookmarkRouter = require('./routes/bookmarkRoutes');
+const voteRouter = require('./routes/voteRoutes');
 
 const errorController = require('./controllers/errorController');
 
@@ -42,6 +43,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/questions', questionRouter);
 app.use('/api/v1/comments', commentRouter);
 app.use('/api/v1/bookmarks', bookmarkRouter);
+app.use('/api/v1/votes', voteRouter);
 
 app.use('*', (req, res, next) => {
   res.status(404).json({

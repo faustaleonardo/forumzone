@@ -1,6 +1,7 @@
 const express = require('express');
 
 const router = express.Router({ mergeParams: true });
+const voteRouter = require('./voteRoutes');
 
 const {
   getAllComments,
@@ -15,7 +16,10 @@ const {
 
 const { protect } = require('./../controllers/authController');
 
+router.use('/:commentId/votes', voteRouter);
+
 router.use(protect);
+
 router
   .route('/')
   .get(getAllComments)

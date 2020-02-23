@@ -3,9 +3,13 @@ const AppError = require('./../utils/appError');
 
 exports.checkIfDocExist = Model => {
   return catchAsync(async (req, res, next) => {
-    const { questionId } = req.params;
+    const { questionId, commentId } = req.params;
+    let id;
 
-    if (!(await Model.findById(questionId))) {
+    if (questionId) id = questionId;
+    if (commentId) id = commentId;
+
+    if (!(await Model.findById(id))) {
       return next(
         new AppError(`Can't find ${Model.modelName} with that id`, 400)
       );
@@ -30,9 +34,12 @@ exports.createOne = Model => {
 
 exports.getAll = Model => {
   return catchAsync(async (req, res, next) => {
-    // for filtering out nested comments or bookmarks on question
     let filter = {};
+    // for filtering out nested comments or bookmarks on question
     if (req.params.questionId) filter = { question: req.params.questionId };
+
+    // for filtering out nested votes on comment
+    if (req.params.commentId) filter = { comment: req.params.commentId };
 
     const docs = await Model.find(filter);
 
