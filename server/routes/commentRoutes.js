@@ -1,6 +1,6 @@
 const express = require('express');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 const {
   getAllComments,
@@ -9,19 +9,21 @@ const {
   updateComment,
   deleteComment,
   setUserQuestionId,
-  checkIfUserMatch
+  hasPermission
 } = require('./../controllers/commentController');
 
 const { protect } = require('./../controllers/authController');
 
 router.use(protect);
-router.get('/', getAllComments);
-router.post('/:questionId', setUserQuestionId, createComment);
+router
+  .route('/')
+  .get(getAllComments)
+  .post(setUserQuestionId, createComment);
 
 router
   .route('/:id')
   .get(getComment)
-  .patch(protect, checkIfUserMatch, updateComment)
-  .delete(protect, checkIfUserMatch, deleteComment);
+  .patch(protect, hasPermission, updateComment)
+  .delete(protect, hasPermission, deleteComment);
 
 module.exports = router;

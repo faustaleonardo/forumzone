@@ -168,3 +168,15 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   next();
 });
+
+exports.hasPermission = Model => {
+  return catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const doc = await Model.findById(id);
+    if (`${doc.user}` !== `${req.user._id}`) {
+      return next(new AppError('Only original user has this permission.', 401));
+    }
+
+    next();
+  });
+};

@@ -4,16 +4,16 @@ const {
   getAll,
   getOne,
   updateOne,
-  deleteOne,
-  checkIfUserMatch
+  deleteOne
 } = require('./handleFactory');
+const { hasPermission } = require('./authController');
 
 exports.setUserId = (req, res, next) => {
   req.body.user = req.user._id;
   next();
 };
 
-exports.checkIfUserMatch = checkIfUserMatch(Question);
+exports.hasPermission = hasPermission(Question);
 
 exports.createQuestion = createOne(Question);
 exports.getAllQuestions = getAll(Question);

@@ -1,12 +1,14 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
-exports.checkIfUserMatch = Model => {
+exports.checkIfDocExist = Model => {
   return catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    const doc = await Model.findById(id);
-    if (`${doc.user}` !== `${req.user._id}`) {
-      return next(new AppError('Only original user has this permission.', 401));
+    const { questionId } = req.params;
+
+    if (!(await Model.findById(questionId))) {
+      return next(
+        new AppError(`Can't find ${Model.modelName} with that id`, 400)
+      );
     }
 
     next();

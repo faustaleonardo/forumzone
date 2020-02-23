@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const voteSchema = new mongoose.Schema({
+const solveSchema = new mongoose.Schema({
   user: {
     type: mongoose.Types.ObjectId,
     ref: 'User'
@@ -15,6 +15,6 @@ const voteSchema = new mongoose.Schema({
   }
 });
 
-const voteModel = mongoose.model('Solve', voteSchema);
+const solveModel = mongoose.model('Solve', solveSchema);
 
-module.exports = voteModel;
+module.exports = solveModel;

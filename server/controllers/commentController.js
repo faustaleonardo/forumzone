@@ -1,29 +1,23 @@
-const Question = require('./../models/questionModel');
 const Comment = require('./../models/commentModel');
+const Question = require('./../models/questionModel');
 const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
 
 const {
   createOne,
   getAll,
   getOne,
   updateOne,
-  deleteOne,
-  checkIfUserMatch
+  deleteOne
 } = require('./handleFactory');
 
-exports.checkIfUserMatch = checkIfUserMatch(Comment);
+const { hasPermission } = require('./authController');
+
+exports.hasPermission = hasPermission(Comment);
 
 exports.setUserQuestionId = catchAsync(async (req, res, next) => {
-  const { questionId } = req.params;
-  const { _id } = req.user;
+  if (!req.body.user) req.body.user = req.user._id;
+  if (!req.body.question) req.body.question = req.params.questionId;
 
-  if (!(await Question.findById(questionId))) {
-    return next(new AppError(`Can't find question with that id`, 400));
-  }
-
-  req.body.user = _id;
-  req.body.question = questionId;
   next();
 });
 
