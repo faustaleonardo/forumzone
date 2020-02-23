@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 const userRouter = require('./routes/userRoutes');
 const questionRouter = require('./routes/questionRoutes');
+const commentRouter = require('./routes/commentRoutes');
 
 const errorController = require('./controllers/errorController');
 
@@ -38,6 +39,7 @@ mongoose
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/questions', questionRouter);
+app.use('/api/v1/comments', commentRouter);
 app.use('*', (req, res, next) => {
   res.status(404).json({
     status: 'fail',

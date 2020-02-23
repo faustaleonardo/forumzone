@@ -8,20 +8,20 @@ const {
   getComment,
   updateComment,
   deleteComment,
-  setUserQuestionId
-} = require('./../controllers/questionController');
+  setUserQuestionId,
+  checkIfUserMatch
+} = require('./../controllers/commentController');
 
 const { protect } = require('./../controllers/authController');
 
-router
-  .route('/')
-  .get(getAllComments)
-  .post(protect, setUserQuestionId, createComment);
+router.use(protect);
+router.get('/', getAllComments);
+router.post('/:questionId', setUserQuestionId, createComment);
 
 router
   .route('/:id')
   .get(getComment)
-  .patch(protect, updateComment)
-  .delete(protect, deleteComment);
+  .patch(protect, checkIfUserMatch, updateComment)
+  .delete(protect, checkIfUserMatch, deleteComment);
 
 module.exports = router;

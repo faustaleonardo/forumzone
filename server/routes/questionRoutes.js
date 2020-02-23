@@ -8,7 +8,8 @@ const {
   getQuestion,
   updateQuestion,
   deleteQuestion,
-  setUserId
+  setUserId,
+  checkIfUserMatch
 } = require('./../controllers/questionController');
 
 const { protect } = require('./../controllers/authController');
@@ -21,7 +22,7 @@ router
 router
   .route('/:id')
   .get(getQuestion)
-  .patch(protect, updateQuestion)
-  .delete(protect, deleteQuestion);
+  .patch(protect, checkIfUserMatch, updateQuestion)
+  .delete(protect, checkIfUserMatch, deleteQuestion);
 
 module.exports = router;

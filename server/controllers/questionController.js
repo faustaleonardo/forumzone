@@ -4,13 +4,16 @@ const {
   getAll,
   getOne,
   updateOne,
-  deleteOne
+  deleteOne,
+  checkIfUserMatch
 } = require('./handleFactory');
 
 exports.setUserId = (req, res, next) => {
   req.body.user = req.user._id;
   next();
 };
+
+exports.checkIfUserMatch = checkIfUserMatch(Question);
 
 exports.createQuestion = createOne(Question);
 exports.getAllQuestions = getAll(Question);

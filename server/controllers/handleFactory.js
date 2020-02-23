@@ -1,6 +1,18 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
+exports.checkIfUserMatch = Model => {
+  return catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const doc = await Model.findById(id);
+    if (`${doc.user}` !== `${req.user._id}`) {
+      return next(new AppError('Only original user has this permission.', 401));
+    }
+
+    next();
+  });
+};
+
 exports.createOne = Model => {
   return catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
