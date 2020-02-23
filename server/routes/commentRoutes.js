@@ -9,7 +9,8 @@ const {
   updateComment,
   deleteComment,
   setUserQuestionId,
-  hasPermission
+  hasPermission,
+  checkIfQuestionExist
 } = require('./../controllers/commentController');
 
 const { protect } = require('./../controllers/authController');
@@ -18,7 +19,7 @@ router.use(protect);
 router
   .route('/')
   .get(getAllComments)
-  .post(setUserQuestionId, createComment);
+  .post(setUserQuestionId, checkIfQuestionExist, createComment);
 
 router
   .route('/:id')

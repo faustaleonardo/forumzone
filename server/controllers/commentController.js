@@ -1,17 +1,21 @@
 const Comment = require('./../models/commentModel');
 const catchAsync = require('./../utils/catchAsync');
+const Question = require('./../models/questionModel');
 
 const {
   createOne,
   getAll,
   getOne,
   updateOne,
-  deleteOne
+  deleteOne,
+  checkIfDocExist
 } = require('./handleFactory');
 
 const { hasPermission } = require('./authController');
 
 exports.hasPermission = hasPermission(Comment);
+
+exports.checkIfQuestionExist = checkIfDocExist(Question);
 
 exports.setUserQuestionId = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user._id;

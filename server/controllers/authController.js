@@ -173,6 +173,9 @@ exports.hasPermission = Model => {
   return catchAsync(async (req, res, next) => {
     const { id } = req.params;
     const doc = await Model.findById(id);
+
+    if (!doc) return next(new AppError(`Can't find doc with that id`, 404));
+
     if (`${doc.user}` !== `${req.user._id}`) {
       return next(
         new AppError('You do not have the permission to do this.', 401)

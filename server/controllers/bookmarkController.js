@@ -1,11 +1,20 @@
 const Bookmark = require('./../models/bookmarkModel');
 const catchAsync = require('./../utils/catchAsync');
+const Question = require('./../models/questionModel');
 
-const { createOne, getAll, getOne, deleteOne } = require('./handleFactory');
+const {
+  createOne,
+  getAll,
+  getOne,
+  deleteOne,
+  checkIfDocExist
+} = require('./handleFactory');
 
 const { hasPermission } = require('./authController');
 
 exports.hasPermission = hasPermission(Bookmark);
+
+exports.checkIfQuestionExist = checkIfDocExist(Question);
 
 exports.setUserQuestionId = catchAsync(async (req, res, next) => {
   if (!req.body.user) req.body.user = req.user._id;

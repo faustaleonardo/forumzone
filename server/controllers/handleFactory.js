@@ -1,6 +1,20 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
+exports.checkIfDocExist = Model => {
+  return catchAsync(async (req, res, next) => {
+    const { questionId } = req.params;
+
+    if (!(await Model.findById(questionId))) {
+      return next(
+        new AppError(`Can't find ${Model.modelName} with that id`, 400)
+      );
+    }
+
+    next();
+  });
+};
+
 exports.createOne = Model => {
   return catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
@@ -41,7 +55,10 @@ exports.getOne = (Model, popOptions) => {
 
     const doc = await query;
 
-    if (!doc) return next(new AppError(`Can't find doc with that id`, 404));
+    if (!doc)
+      return next(
+        new AppError(`Can't find ${Model.modelName} with that id`, 404)
+      );
 
     res.status(200).json({
       status: 'success',
@@ -62,7 +79,10 @@ exports.updateOne = Model => {
       runValidators: true
     });
 
-    if (!doc) return next(new AppError(`Can't find doc with that id`, 404));
+    if (!doc)
+      return next(
+        new AppError(`Can't find ${Model.modelName} with that id`, 404)
+      );
 
     res.status(200).json({
       status: 'success',
@@ -79,7 +99,10 @@ exports.deleteOne = Model => {
 
     const doc = await Model.findByIdAndDelete(id);
 
-    if (!doc) return next(new AppError(`Can't find doc with that id`, 404));
+    if (!doc)
+      return next(
+        new AppError(`Can't find ${Model.modelName} with that id`, 404)
+      );
 
     res.status(204).json({
       status: 'success',

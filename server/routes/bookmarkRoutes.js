@@ -8,7 +8,8 @@ const {
   getBookmark,
   deleteBookmark,
   setUserQuestionId,
-  hasPermission
+  hasPermission,
+  checkIfQuestionExist
 } = require('./../controllers/bookmarkController');
 
 const { protect } = require('./../controllers/authController');
@@ -17,7 +18,7 @@ router.use(protect);
 router
   .route('/')
   .get(getAllBookmarks)
-  .post(setUserQuestionId, createBookmark);
+  .post(setUserQuestionId, checkIfQuestionExist, createBookmark);
 
 router
   .route('/:id')
