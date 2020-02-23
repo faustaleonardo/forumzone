@@ -12,7 +12,10 @@ const filter = (obj, ...fields) => {
   return newObj;
 };
 
-exports.getUser = getOne(User);
+exports.getUser = getOne(User, {
+  path: 'solveQuestions',
+  select: 'title content -solvedByUser'
+});
 exports.getAllUsers = getAll(User);
 
 exports.updateMe = catchAsync(async (req, res, next) => {

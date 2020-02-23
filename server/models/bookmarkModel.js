@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const bookmarkSchema = new mongoose.Schema({
   user: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: 'User'
   },
   question: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref: 'Question'
   },
   createdAt: {

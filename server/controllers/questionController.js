@@ -1,4 +1,6 @@
+const catchAsync = require('./../utils/catchAsync');
 const Question = require('./../models/questionModel');
+const Comment = require('./../models/commentModel');
 const {
   createOne,
   getAll,
@@ -14,6 +16,14 @@ exports.setUserId = (req, res, next) => {
 };
 
 exports.hasPermission = hasPermission(Question);
+
+exports.selectUser = catchAsync(async (req, res, next) => {
+  const comment = await Comment.findById(req.params.commentId);
+
+  req.body.solvedBy = comment.user;
+
+  next();
+});
 
 exports.createQuestion = createOne(Question);
 exports.getAllQuestions = getAll(Question);

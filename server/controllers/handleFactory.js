@@ -1,19 +1,19 @@
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
-exports.checkIfDocExist = Model => {
-  return catchAsync(async (req, res, next) => {
-    const { questionId } = req.params;
+// exports.checkIfDocExist = Model => {
+//   return catchAsync(async (req, res, next) => {
+//     const { questionId } = req.params;
 
-    if (!(await Model.findById(questionId))) {
-      return next(
-        new AppError(`Can't find ${Model.modelName} with that id`, 400)
-      );
-    }
+//     if (!(await Model.findById(questionId))) {
+//       return next(
+//         new AppError(`Can't find ${Model.modelName} with that id`, 400)
+//       );
+//     }
 
-    next();
-  });
-};
+//     next();
+//   });
+// };
 
 exports.createOne = Model => {
   return catchAsync(async (req, res, next) => {
@@ -42,11 +42,15 @@ exports.getAll = Model => {
   });
 };
 
-exports.getOne = Model => {
+exports.getOne = (Model, popOptions) => {
   return catchAsync(async (req, res, next) => {
     const { id } = req.params;
 
-    const doc = await Model.findById(id);
+    const query = Model.findById(id);
+    if (popOptions) query.populate(popOptions);
+
+    const doc = await query;
+
     if (!doc) return next(new AppError(`Can't find doc with that id`, 404));
 
     res.status(200).json({

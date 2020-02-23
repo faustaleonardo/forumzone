@@ -174,7 +174,9 @@ exports.hasPermission = Model => {
     const { id } = req.params;
     const doc = await Model.findById(id);
     if (`${doc.user}` !== `${req.user._id}`) {
-      return next(new AppError('Only original user has this permission.', 401));
+      return next(
+        new AppError('You do not have the permission to do this.', 401)
+      );
     }
 
     next();

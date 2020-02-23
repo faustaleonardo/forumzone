@@ -23,7 +23,7 @@ router
 router
   .route('/:id')
   .get(getComment)
-  .patch(protect, hasPermission, updateComment)
-  .delete(protect, hasPermission, deleteComment);
+  .patch(hasPermission, updateComment)
+  .delete(hasPermission, deleteComment);
 
 module.exports = router;

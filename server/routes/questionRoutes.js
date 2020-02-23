@@ -9,16 +9,23 @@ const {
   updateQuestion,
   deleteQuestion,
   setUserId,
-  hasPermission
+  hasPermission,
+  selectUser
 } = require('./../controllers/questionController');
 
 const { protect } = require('./../controllers/authController');
 
 const commentRouter = require('./../routes/commentRoutes');
-const solveRouter = require('./../routes/solveRoutes');
+
+router.patch(
+  '/:id/comments/:commentId/solve',
+  protect,
+  hasPermission,
+  selectUser,
+  updateQuestion
+);
 
 router.use('/:questionId/comments', protect, commentRouter);
-router.use('/:questionId/solves', protect, solveRouter);
 
 router
   .route('/')

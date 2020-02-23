@@ -6,8 +6,7 @@ const {
   getAllSolves,
   getSolve,
   createSolve,
-  setUserQuestionId,
-  checkIfQuestionExist
+  setUserQuestionId
 } = require('./../controllers/solveController');
 
 const { protect } = require('./../controllers/authController');
@@ -16,7 +15,7 @@ router.use(protect);
 router
   .route('/')
   .get(getAllSolves)
-  .post(checkIfQuestionExist, setUserQuestionId, createSolve);
+  .post(setUserQuestionId, createSolve);
 
 router.get('/:id').get(getSolve);
 
