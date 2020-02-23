@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const forumSchema = new mongoose.Schema({
+const questionSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'Please provide your title'],
@@ -15,10 +15,26 @@ const forumSchema = new mongoose.Schema({
   user: {
     type: mongoose.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Forum must belong to a user']
+    required: [true, 'Question must belong to a user']
+  },
+  active: {
+    type: Boolean,
+    default: true
+  },
+  views: {
+    Type: String,
+    default: 0
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now()
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now()
   }
 });
 
-const forumModel = mongoose.model('Forum', forumSchema);
+const questionModel = mongoose.model('Question', questionSchema);
 
-module.exports = forumModel;
+module.exports = questionModel;
