@@ -40,6 +40,7 @@ const userSchema = new mongoose.Schema(
       type: String
     },
     jobs: Array,
+    age: Number,
     accessibility: {
       type: Boolean,
       default: true

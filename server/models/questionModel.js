@@ -49,6 +49,9 @@ questionSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'solvedBy',
     select: 'name photo jobs'
+  }).populate({
+    path: 'user',
+    select: 'name age'
   });
 
   next();

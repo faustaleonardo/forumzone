@@ -36,13 +36,22 @@ exports.createOne = Model => {
 exports.getAll = Model => {
   return catchAsync(async (req, res, next) => {
     let filter = {};
+    let features;
     // for filtering out nested comments or bookmarks on question
     if (req.params.questionId) filter = { question: req.params.questionId };
 
     // for filtering out nested votes on comment
     if (req.params.commentId) filter = { comment: req.params.commentId };
 
-    const features = new APIFeatures(Model.find(filter), req.query).filter();
+    if (req.query.search) {
+      features = new APIFeatures(Model.find(), req.query).search();
+    } else {
+      features = new APIFeatures(Model.find(filter), req.query)
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+    }
 
     const docs = await features.query;
 

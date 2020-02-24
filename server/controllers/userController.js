@@ -20,7 +20,15 @@ exports.getAllUsers = getAll(User);
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   const filteredObj = {
-    ...filter(req.body, 'name', 'email', 'photo', 'jobs', 'accessibility'),
+    ...filter(
+      req.body,
+      'name',
+      'email',
+      'photo',
+      'jobs',
+      'accessibility',
+      'age'
+    ),
     updatedAt: Date.now()
   };
 
