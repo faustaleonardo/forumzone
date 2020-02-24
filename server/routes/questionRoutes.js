@@ -1,6 +1,6 @@
 const express = require('express');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 const {
   getAllQuestions,
@@ -10,7 +10,10 @@ const {
   // deleteQuestion,
   setUserId,
   hasPermission,
-  selectUser
+  selectUser,
+  setSolved,
+  setUnsolved,
+  getAllQuestionsWithStatus
 } = require('./../controllers/questionController');
 
 const { protect } = require('./../controllers/authController');
@@ -28,6 +31,11 @@ router.patch(
 
 router.use('/:questionId/comments', protect, commentRouter);
 router.use('/:questionId/bookmarks', protect, bookmarkRouter);
+
+router.get('/me', protect, setUserId, getAllQuestions);
+
+router.get('/solved', protect, setSolved, getAllQuestionsWithStatus);
+router.get('/unsolved', protect, setUnsolved, getAllQuestionsWithStatus);
 
 router
   .route('/')

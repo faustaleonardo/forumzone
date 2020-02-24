@@ -19,7 +19,7 @@ exports.hasPermission = hasPermission(Question);
 
 exports.selectUser = catchAsync(async (req, res, next) => {
   const comment = await Comment.findById(req.params.commentId);
-  req.body.solvedBy = comment.user;
+  req.body.solvedByUser = comment.user._id;
 
   next();
 });
@@ -32,3 +32,26 @@ exports.getQuestion = getOne(Question, {
 });
 exports.updateQuestion = updateOne(Question);
 exports.deleteQuestion = deleteOne(Question);
+
+exports.setSolved = (req, res, next) => {
+  req.solved = true;
+  next();
+};
+
+exports.setUnsolved = (req, res, next) => {
+  req.solved = false;
+  next();
+};
+
+exports.getAllQuestionsWithStatus = catchAsync(async (req, res, next) => {
+  const status = req.solved ? { $ne: null } : null;
+  const docs = await Question.find({ solvedByUser: status });
+
+  res.status(200).send({
+    status: 'success',
+    results: docs.length,
+    data: {
+      data: docs
+    }
+  });
+});

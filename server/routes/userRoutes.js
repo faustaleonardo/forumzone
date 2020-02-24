@@ -17,12 +17,15 @@ const {
   updateMe,
   deleteMe
 } = require('../controllers/userController');
-const bookmarkRouter = require('./bookmarkRoutes');
+
+const questionRouter = require('./questionRoutes');
 const commentRouter = require('./commentRoutes');
+const bookmarkRouter = require('./bookmarkRoutes');
 const voteRouter = require('./voteRoutes');
 
-router.use('/:userId/bookmarks', bookmarkRouter);
+router.use('/:userId/questions', questionRouter);
 router.use('/:userId/comments', commentRouter);
+router.use('/:userId/bookmarks', bookmarkRouter);
 router.use('/:userId/votes', voteRouter);
 
 router.get('/me', protect, getMe, getUser);

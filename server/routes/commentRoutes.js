@@ -9,6 +9,7 @@ const {
   getComment,
   updateComment,
   deleteComment,
+  setUserId,
   setUserQuestionId,
   hasPermission,
   checkIfQuestionExist
@@ -19,6 +20,8 @@ const { protect } = require('./../controllers/authController');
 router.use('/:commentId/votes', voteRouter);
 
 router.use(protect);
+
+router.get('/me', setUserId, getAllComments);
 
 router
   .route('/')

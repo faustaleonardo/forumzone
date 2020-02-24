@@ -53,7 +53,7 @@ questionSchema.virtual('comments', {
 
 questionSchema.pre(/^find/, function(next) {
   this.populate({
-    path: 'solvedBy',
+    path: 'solvedByUser',
     select: 'name photo jobs'
   }).populate({
     path: 'user',
