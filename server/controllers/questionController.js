@@ -26,6 +26,9 @@ exports.selectUser = catchAsync(async (req, res, next) => {
 
 exports.createQuestion = createOne(Question);
 exports.getAllQuestions = getAll(Question);
-exports.getQuestion = getOne(Question);
+exports.getQuestion = getOne(Question, {
+  path: 'comments',
+  select: 'user comment -question'
+});
 exports.updateQuestion = updateOne(Question);
 exports.deleteQuestion = deleteOne(Question);

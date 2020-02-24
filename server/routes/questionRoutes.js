@@ -7,7 +7,7 @@ const {
   createQuestion,
   getQuestion,
   updateQuestion,
-  deleteQuestion,
+  // deleteQuestion,
   setUserId,
   hasPermission,
   selectUser
@@ -37,7 +37,7 @@ router
 router
   .route('/:id')
   .get(getQuestion)
-  .patch(protect, hasPermission, updateQuestion)
-  .delete(protect, hasPermission, deleteQuestion);
+  .patch(protect, hasPermission, updateQuestion);
+// .delete(protect, hasPermission, deleteQuestion);
 
 module.exports = router;

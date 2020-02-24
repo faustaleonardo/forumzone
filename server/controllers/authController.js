@@ -176,7 +176,7 @@ exports.hasPermission = Model => {
 
     if (!doc) return next(new AppError(`Can't find doc with that id`, 404));
 
-    if (`${doc.user}` !== `${req.user._id}`) {
+    if (`${doc.user._id || doc.user}` !== `${req.user._id}`) {
       return next(
         new AppError('You do not have the permission to do this.', 401)
       );

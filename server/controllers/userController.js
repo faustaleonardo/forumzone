@@ -12,6 +12,11 @@ const filter = (obj, ...fields) => {
   return newObj;
 };
 
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user._id;
+  next();
+};
+
 exports.getUser = getOne(User, {
   path: 'solveQuestions',
   select: 'title content -solvedByUser'

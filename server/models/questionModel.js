@@ -45,13 +45,19 @@ const questionSchema = new mongoose.Schema(
   }
 );
 
+questionSchema.virtual('comments', {
+  ref: 'Comment',
+  foreignField: 'question',
+  localField: '_id'
+});
+
 questionSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'solvedBy',
     select: 'name photo jobs'
   }).populate({
     path: 'user',
-    select: 'name age'
+    select: 'name photo jobs'
   });
 
   next();

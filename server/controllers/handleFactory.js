@@ -4,11 +4,11 @@ const APIFeatures = require('./../utils/apiFeatures');
 
 exports.checkIfDocExist = Model => {
   return catchAsync(async (req, res, next) => {
-    const { questionId, commentId } = req.params;
+    const { question, comment } = req.body;
     let id;
 
-    if (questionId) id = questionId;
-    if (commentId) id = commentId;
+    if (comment) id = comment;
+    if (question) id = question;
 
     if (!(await Model.findById(id))) {
       return next(
@@ -39,6 +39,9 @@ exports.getAll = Model => {
     let features;
     // for filtering out nested comments or bookmarks on question
     if (req.params.questionId) filter = { question: req.params.questionId };
+
+    // for filtering out nested comments or bookmarks on user
+    if (req.params.userId) filter = { user: req.params.userId };
 
     // for filtering out nested votes on comment
     if (req.params.commentId) filter = { comment: req.params.commentId };

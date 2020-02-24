@@ -13,20 +13,28 @@ const {
 const {
   getUser,
   getAllUsers,
+  getMe,
   updateMe,
   deleteMe
 } = require('../controllers/userController');
+const bookmarkRouter = require('./bookmarkRoutes');
+const commentRouter = require('./commentRoutes');
+const voteRouter = require('./voteRoutes');
 
+router.use('/:userId/bookmarks', bookmarkRouter);
+router.use('/:userId/comments', commentRouter);
+router.use('/:userId/votes', voteRouter);
+
+router.get('/me', protect, getMe, getUser);
+router.patch('/updatePassword', protect, updatePassword);
+router.patch('/updateMe', protect, updateMe);
+router.delete('/deleteMe', protect, deleteMe);
+router.get('/', protect, getAllUsers);
+
+router.get('/:id', getUser);
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/forgetPassword', forgetPassword);
 router.patch('/resetPassword/:token', resetPassword);
-router.get('/:id', getUser);
-
-router.use(protect);
-router.patch('/updatePassword', updatePassword);
-router.patch('/updateMe', updateMe);
-router.delete('/deleteMe', deleteMe);
-router.get('/', getAllUsers);
 
 module.exports = router;
