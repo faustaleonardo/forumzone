@@ -5,6 +5,7 @@ const router = express.Router();
 const {
   signup,
   login,
+  logout,
   forgetPassword,
   resetPassword,
   updatePassword,
@@ -34,6 +35,7 @@ router.patch('/updateMe', protect, updateMe);
 router.delete('/deleteMe', protect, deleteMe);
 router.get('/', protect, getAllUsers);
 
+router.get('/logout', logout);
 router.get('/:id', getUser);
 router.post('/signup', signup);
 router.post('/login', login);
