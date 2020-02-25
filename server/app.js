@@ -1,7 +1,14 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
-const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+const cors = require('cors');
+const compression = require('compression');
+const cookieParser = require('cookie-parser');
 
 const userRouter = require('./routes/userRoutes');
 const questionRouter = require('./routes/questionRoutes');
@@ -17,27 +24,39 @@ dotenv.config({
 
 const app = express();
 
-app.use(morgan('combined'));
-app.use(express.json());
+app.use(cors());
+app.options('*', cors());
 
-const options = {
-  useNewUrlParser: true,
-  useCreateIndex: true
-};
+app.enable('trust proxy');
 
-const uri = process.env.DATABASE.replace(
-  /<password>/,
-  process.env.DATABASE_PASSWORD
+app.use(helmet());
+
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this ip address! Try again in an hour'
+});
+app.use('/api', limiter);
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('combined'));
+}
+
+app.use(express.json({ limit: '10kb' }));
+
+app.use(mongoSanitize());
+
+app.use(xss());
+
+app.use(
+  hpp({
+    whitelist: ['age']
+  })
 );
 
-mongoose
-  .connect(uri, options)
-  .then(() => {
-    console.log('Connected to Database');
-  })
-  .catch(err => {
-    console.log('Failed connecting to Database', err);
-  });
+app.use(cookieParser());
+
+app.use(compression());
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/questions', questionRouter);

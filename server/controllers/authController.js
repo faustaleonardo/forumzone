@@ -12,8 +12,19 @@ const createToken = id => {
   });
 };
 
-const sendToken = (user, res, statusCode) => {
+const sendToken = (user, req, res, statusCode) => {
   const token = createToken(user._id);
+
+  res.cookie('jwt', token, {
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
+  });
+
+  user.password = undefined;
+
   res.status(statusCode).json({
     status: 'success',
     data: {
@@ -46,7 +57,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirmation
   });
 
-  sendToken(user, res, 200);
+  sendToken(user, req, res, 200);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -59,7 +70,16 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.verifyPassword(password, user.password)))
     next(new AppError('Your email or password is incorrect', 401));
 
-  sendToken(user, res, 200);
+  sendToken(user, req, res, 200);
+});
+
+exports.logout = catchAsync(async (req, res, next) => {
+  res.cookie(jwt, 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+
+  res.status(200).json({ status: 'success' });
 });
 
 exports.forgetPassword = catchAsync(async (req, res, next) => {
@@ -120,7 +140,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   await user.save();
 
-  sendToken(user, res, 200);
+  sendToken(user, req, res, 200);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -143,7 +163,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.passwordConfirmation = passwordConfirmation;
 
   await user.save();
-  sendToken(user, res, 200);
+  sendToken(user, req, res, 200);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -151,6 +171,8 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (req.headers && req.headers.authorization) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token)
