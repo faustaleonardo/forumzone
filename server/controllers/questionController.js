@@ -76,16 +76,22 @@ exports.getPopularThisWeekQuestions = catchAsync(async (req, res, next) => {
     },
     {
       $group: {
-        _id: { $week: '$createdAt' },
+        _id: { $isoWeek: '$createdAt' },
         questions: {
           $push: {
             _id: '$_id',
             title: '$title',
             user: '$user',
             createdAt: '$createdAt',
-            comments: '$comments'
+            weekNumber: { $isoWeek: '$createdAt' }
           }
         }
+      }
+    },
+    {
+      $addFields: {
+        weekNumber: '$_id',
+        thisWeekNumber: { $isoWeek: new Date() }
       }
     }
   ]);
