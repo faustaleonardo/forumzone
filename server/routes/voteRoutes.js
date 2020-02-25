@@ -9,12 +9,15 @@ const {
   deleteVote,
   setUserCommentId,
   hasPermission,
-  checkIfCommentExist
+  checkIfCommentExist,
+  getVotesStats
 } = require('./../controllers/voteController');
 
 const { protect } = require('./../controllers/authController');
 
 router.use(protect);
+router.get('/stats', getVotesStats);
+
 router
   .route('/')
   .get(getAllVotes)

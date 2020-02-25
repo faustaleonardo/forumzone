@@ -74,7 +74,6 @@ exports.getOne = (Model, popOptions) => {
 
     const query = Model.findById(id);
     if (popOptions) query.populate(popOptions);
-
     const doc = await query;
 
     if (!doc)
