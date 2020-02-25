@@ -10,6 +10,16 @@ const {
 } = require('./handleFactory');
 const { hasPermission } = require('./authController');
 
+const sendResponse = (res, docs) => {
+  res.status(200).send({
+    status: 'success',
+    results: docs.length,
+    data: {
+      data: docs
+    }
+  });
+};
+
 exports.setUserId = (req, res, next) => {
   req.body.user = req.user._id;
   next();
@@ -20,16 +30,12 @@ exports.hasPermission = hasPermission(Question);
 exports.selectUser = catchAsync(async (req, res, next) => {
   const comment = await Comment.findById(req.params.commentId);
   req.body.solvedByUser = comment.user._id;
-
   next();
 });
 
 exports.createQuestion = createOne(Question);
 exports.getAllQuestions = getAll(Question);
-exports.getQuestion = getOne(Question, {
-  path: 'comments',
-  select: 'user comment -question'
-});
+exports.getQuestion = getOne(Question);
 exports.updateQuestion = updateOne(Question);
 exports.deleteQuestion = deleteOne(Question);
 
@@ -47,11 +53,42 @@ exports.getAllQuestionsWithStatus = catchAsync(async (req, res, next) => {
   const status = req.solved ? { $ne: null } : null;
   const docs = await Question.find({ solvedByUser: status });
 
-  res.status(200).send({
-    status: 'success',
-    results: docs.length,
-    data: {
-      data: docs
+  sendResponse(res, docs);
+});
+
+exports.incrementView = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  await Question.findByIdAndUpdate(id, { $inc: { views: 1 } });
+
+  next();
+});
+
+exports.getUnrepliedQuestions = catchAsync(async (req, res, next) => {
+  const docs = await Question.find({ comments: { $size: 0 } });
+
+  sendResponse(res, docs);
+});
+
+exports.getPopularThisWeekQuestions = catchAsync(async (req, res, next) => {
+  const docs = await Question.aggregate([
+    {
+      $match: { comments: { $not: { $size: 0 } } }
+    },
+    {
+      $group: {
+        _id: { $week: '$createdAt' },
+        questions: {
+          $push: {
+            _id: '$_id',
+            title: '$title',
+            user: '$user',
+            createdAt: '$createdAt',
+            comments: '$comments'
+          }
+        }
+      }
     }
-  });
+  ]);
+
+  sendResponse(res, docs);
 });

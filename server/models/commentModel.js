@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Vote = require('./voteModel');
+const Question = require('./questionModel');
 
 const commentSchema = new mongoose.Schema(
   {
@@ -31,10 +32,6 @@ const commentSchema = new mongoose.Schema(
   }
 );
 
-commentSchema.virtual('userId').get(function() {
-  return this.user._id;
-});
-
 // delete votes associated with the comment
 commentSchema.pre(/^findOneAndDelete/, async function(next) {
   this.c = await this.findOne();
@@ -48,11 +45,20 @@ commentSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'user',
     select: 'name photo jobs'
-  }).populate({
-    path: 'question',
-    select: 'title -user'
   });
+  // creating conflict with questionModel
+  // .populate({
+  //   path: 'question',
+  //   select: 'title -user'
+  // });
 
+  next();
+});
+
+commentSchema.pre('save', async function(next) {
+  await Question.findByIdAndUpdate(this.question, {
+    $push: { comments: this._id }
+  });
   next();
 });
 

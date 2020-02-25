@@ -18,6 +18,12 @@ const questionSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Question must belong to a user']
     },
+    comments: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Comment'
+      }
+    ],
     solvedByUser: {
       type: mongoose.Schema.ObjectId,
       ref: 'User'
@@ -45,20 +51,19 @@ const questionSchema = new mongoose.Schema(
   }
 );
 
-questionSchema.virtual('comments', {
-  ref: 'Comment',
-  foreignField: 'question',
-  localField: '_id'
-});
-
 questionSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'solvedByUser',
     select: 'name photo jobs'
-  }).populate({
-    path: 'user',
-    select: 'name photo jobs'
-  });
+  })
+    .populate({
+      path: 'user',
+      select: 'name photo jobs'
+    })
+    .populate({
+      path: 'comments',
+      select: 'comment user'
+    });
 
   next();
 });

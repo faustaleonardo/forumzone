@@ -13,7 +13,10 @@ const {
   selectUser,
   setSolved,
   setUnsolved,
-  getAllQuestionsWithStatus
+  getAllQuestionsWithStatus,
+  incrementView,
+  getUnrepliedQuestions,
+  getPopularThisWeekQuestions
 } = require('./../controllers/questionController');
 
 const { protect } = require('./../controllers/authController');
@@ -36,6 +39,8 @@ router.get('/me', protect, setUserId, getAllQuestions);
 
 router.get('/solved', protect, setSolved, getAllQuestionsWithStatus);
 router.get('/unsolved', protect, setUnsolved, getAllQuestionsWithStatus);
+router.get('/unreplied', protect, getUnrepliedQuestions);
+router.get('/popular-this-week', protect, getPopularThisWeekQuestions);
 
 router
   .route('/')
@@ -44,7 +49,7 @@ router
 
 router
   .route('/:id')
-  .get(getQuestion)
+  .get(incrementView, getQuestion)
   .patch(protect, hasPermission, updateQuestion);
 // .delete(protect, hasPermission, deleteQuestion);
 
